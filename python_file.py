@@ -12,128 +12,130 @@
 # Purpose: Accept a list of numeric grades and produce statistics
 #          and letter-grade breakdowns.
 #
-# Commit history will show:
-#   chore  — canvas setup (this commit)
-#   feat   — core calculation functions
-#   feat   — letter grade assignment + summary report  [tag: v0.2]
-#   fix    — edge-case bug fix for empty input
-#   docs   — docstrings + usage example               [tag: v0.3]
-#   refactor — class-based API (breaking change)      [tag: v1.0]
+# Commit history:
+#   chore    — canvas setup
+#   feat     — core calculation functions
+#   feat     — letter grade assignment + summary report  [tag: v0.2]
+#   fix      — edge-case bug fix for empty input
+#   docs     — docstrings + usage example               [tag: v0.3]
+#   refactor — class-based API (breaking change)        [tag: v1.0]
 # =============================================================================
 
 
-def calculate_mean(grades):
-    """Return the arithmetic mean of a list of numeric grades.
+class GradeAnalyzer:
+    """Analyze a collection of numeric grades and produce statistics.
 
-    Args:
-        grades (list[float]): Numeric grade values (0–100).
-
-    Returns:
-        float: Mean of the grades, or 0.0 if the list is empty.
-    """
-    if not grades:
-        return 0.0
-    return sum(grades) / len(grades)
-
-
-def calculate_min(grades):
-    """Return the lowest grade in the list.
-
-    Args:
-        grades (list[float]): Numeric grade values (0–100).
-
-    Returns:
-        float: Minimum grade value.
-    """
-    return min(grades)
-
-
-def calculate_max(grades):
-    """Return the highest grade in the list.
-
-    Args:
-        grades (list[float]): Numeric grade values (0–100).
-
-    Returns:
-        float: Maximum grade value.
-    """
-    return max(grades)
-
-
-def calculate_pass_rate(grades, passing_threshold=50):
-    """Return the percentage of grades at or above the passing threshold.
+    All standalone functions from previous versions have been consolidated
+    into this class. Callers must instantiate GradeAnalyzer with a list
+    of grades before using any analysis methods.
 
     Args:
         grades (list[float]): Numeric grade values (0–100).
         passing_threshold (float): Minimum score to count as passing.
             Defaults to 50.
 
-    Returns:
-        float: Pass rate as a percentage (0.0–100.0), or 0.0 if empty.
+    Example:
+        analyzer = GradeAnalyzer([92, 85, 73, 61, 45])
+        print(analyzer.generate_summary())
     """
-    if not grades:
-        return 0.0
-    passing = sum(1 for g in grades if g >= passing_threshold)
-    return (passing / len(grades)) * 100
 
+    def __init__(self, grades, passing_threshold=50):
+        """Initialise the analyzer with a grade list and passing threshold.
 
-def assign_letter_grade(score):
-    """Map a numeric score to an A–F letter grade.
+        Args:
+            grades (list[float]): Numeric grade values (0–100).
+            passing_threshold (float): Minimum passing score. Defaults to 50.
+        """
+        self.grades = grades
+        self.passing_threshold = passing_threshold
 
-    Uses a standard 10-point scale:
-        A: 90–100, B: 80–89, C: 70–79, D: 60–69, F: 0–59
+    def calculate_mean(self):
+        """Return the arithmetic mean of the grade list.
 
-    Args:
-        score (float): Numeric score (0–100).
+        Returns:
+            float: Mean grade, or 0.0 if the list is empty.
+        """
+        if not self.grades:
+            return 0.0
+        return sum(self.grades) / len(self.grades)
 
-    Returns:
-        str: Letter grade ('A', 'B', 'C', 'D', or 'F').
-    """
-    if score >= 90:
-        return "A"
-    elif score >= 80:
-        return "B"
-    elif score >= 70:
-        return "C"
-    elif score >= 60:
-        return "D"
-    else:
-        return "F"
+    def calculate_min(self):
+        """Return the lowest grade in the list.
 
+        Returns:
+            float: Minimum grade value.
+        """
+        return min(self.grades)
 
-def generate_summary(grades, passing_threshold=50):
-    """Generate a formatted text summary report for a list of grades.
+    def calculate_max(self):
+        """Return the highest grade in the list.
 
-    Computes mean, min, max, pass rate, and letter-grade distribution,
-    then returns them as a multi-line string.
+        Returns:
+            float: Maximum grade value.
+        """
+        return max(self.grades)
 
-    Args:
-        grades (list[float]): Numeric grade values (0–100).
-        passing_threshold (float): Minimum score to count as passing.
-            Defaults to 50.
+    def calculate_pass_rate(self):
+        """Return the percentage of grades at or above the passing threshold.
 
-    Returns:
-        str: Multi-line summary report.
-    """
-    letter_counts = {"A": 0, "B": 0, "C": 0, "D": 0, "F": 0}
-    for grade in grades:
-        letter = assign_letter_grade(grade)
-        letter_counts[letter] += 1
+        Returns:
+            float: Pass rate as a percentage (0.0–100.0), or 0.0 if empty.
+        """
+        if not self.grades:
+            return 0.0
+        passing = sum(1 for g in self.grades if g >= self.passing_threshold)
+        return (passing / len(self.grades)) * 100
 
-    lines = [
-        "=== Student Grade Summary ===",
-        f"Students assessed : {len(grades)}",
-        f"Mean score        : {calculate_mean(grades):.2f}",
-        f"Highest score     : {calculate_max(grades)}",
-        f"Lowest score      : {calculate_min(grades)}",
-        f"Pass rate         : {calculate_pass_rate(grades, passing_threshold):.1f}%",
-        "",
-        "Letter grade breakdown:",
-    ]
-    for letter, count in letter_counts.items():
-        lines.append(f"  {letter}: {count}")
+    @staticmethod
+    def assign_letter_grade(score):
+        """Map a numeric score to an A–F letter grade.
 
-    return "\n".join(lines)
+        Uses a standard 10-point scale:
+            A: 90–100, B: 80–89, C: 70–79, D: 60–69, F: 0–59
+
+        Args:
+            score (float): Numeric score (0–100).
+
+        Returns:
+            str: Letter grade ('A', 'B', 'C', 'D', or 'F').
+        """
+        if score >= 90:
+            return "A"
+        elif score >= 80:
+            return "B"
+        elif score >= 70:
+            return "C"
+        elif score >= 60:
+            return "D"
+        else:
+            return "F"
+
+    def generate_summary(self):
+        """Generate a formatted text summary report for the grade list.
+
+        Returns:
+            str: Multi-line summary report including mean, min, max,
+                pass rate, and letter-grade distribution.
+        """
+        letter_counts = {"A": 0, "B": 0, "C": 0, "D": 0, "F": 0}
+        for grade in self.grades:
+            letter = self.assign_letter_grade(grade)
+            letter_counts[letter] += 1
+
+        lines = [
+            "=== Student Grade Summary ===",
+            f"Students assessed : {len(self.grades)}",
+            f"Mean score        : {self.calculate_mean():.2f}",
+            f"Highest score     : {self.calculate_max()}",
+            f"Lowest score      : {self.calculate_min()}",
+            f"Pass rate         : {self.calculate_pass_rate():.1f}%",
+            "",
+            "Letter grade breakdown:",
+        ]
+        for letter, count in letter_counts.items():
+            lines.append(f"  {letter}: {count}")
+
+        return "\n".join(lines)
 
 
 # =============================================================================
@@ -141,8 +143,9 @@ def generate_summary(grades, passing_threshold=50):
 # =============================================================================
 #
 # scores = [92, 85, 73, 61, 45, 88, 79, 95, 52, 67]
+# analyzer = GradeAnalyzer(scores)
 #
-# print(generate_summary(scores))
+# print(analyzer.generate_summary())
 #
 # Output:
 #   === Student Grade Summary ===
