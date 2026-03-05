@@ -23,6 +23,8 @@
 
 
 def calculate_mean(grades):
+    if not grades:
+        return 0.0
     return sum(grades) / len(grades)
 
 
@@ -35,6 +37,8 @@ def calculate_max(grades):
 
 
 def calculate_pass_rate(grades, passing_threshold=50):
+    if not grades:
+        return 0.0
     passing = sum(1 for g in grades if g >= passing_threshold)
     return (passing / len(grades)) * 100
 
