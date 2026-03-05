@@ -20,3 +20,20 @@
 #   docs   — docstrings + usage example               [tag: v0.3]
 #   refactor — class-based API (breaking change)      [tag: v1.0]
 # =============================================================================
+
+
+def calculate_mean(grades):
+    return sum(grades) / len(grades)
+
+
+def calculate_min(grades):
+    return min(grades)
+
+
+def calculate_max(grades):
+    return max(grades)
+
+
+def calculate_pass_rate(grades, passing_threshold=50):
+    passing = sum(1 for g in grades if g >= passing_threshold)
+    return (passing / len(grades)) * 100
