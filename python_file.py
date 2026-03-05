@@ -37,3 +37,38 @@ def calculate_max(grades):
 def calculate_pass_rate(grades, passing_threshold=50):
     passing = sum(1 for g in grades if g >= passing_threshold)
     return (passing / len(grades)) * 100
+
+
+def assign_letter_grade(score):
+    if score >= 90:
+        return "A"
+    elif score >= 80:
+        return "B"
+    elif score >= 70:
+        return "C"
+    elif score >= 60:
+        return "D"
+    else:
+        return "F"
+
+
+def generate_summary(grades, passing_threshold=50):
+    letter_counts = {"A": 0, "B": 0, "C": 0, "D": 0, "F": 0}
+    for grade in grades:
+        letter = assign_letter_grade(grade)
+        letter_counts[letter] += 1
+
+    lines = [
+        "=== Student Grade Summary ===",
+        f"Students assessed : {len(grades)}",
+        f"Mean score        : {calculate_mean(grades):.2f}",
+        f"Highest score     : {calculate_max(grades)}",
+        f"Lowest score      : {calculate_min(grades)}",
+        f"Pass rate         : {calculate_pass_rate(grades, passing_threshold):.1f}%",
+        "",
+        "Letter grade breakdown:",
+    ]
+    for letter, count in letter_counts.items():
+        lines.append(f"  {letter}: {count}")
+
+    return "\n".join(lines)
